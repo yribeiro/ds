@@ -112,11 +112,13 @@ class DoublyLinkedList:
         self._size += 1
 
     def first(self) -> Any:
-        assert self.is_empty(), "Empty list"
+        if self.is_empty():
+            raise IndexError("Empty List")
         return self._head.data
 
     def last(self) -> Any:
-        assert self.is_empty(), "Empty list"
+        if self.is_empty():
+            raise IndexError("Empty List")
         return self._tail.data
 
     def remove_first(self) -> Any:
