@@ -52,7 +52,8 @@ Complexity Analysis (implemented as binary heap)
     Adding a hash table increases space by O(n)
 
 """
-from typing import Any, Dict, List
+from copy import copy
+from typing import Any, Dict, List, Set
 
 
 class PriorityQueue:
@@ -62,20 +63,53 @@ class PriorityQueue:
 
     def __init__(self):
         # hash table to store the value -> positions map
-        self._hash: Dict[Any, int] = {}
-        self._tree: List[Any] = []
+        self._hash: Dict[Any, Set[int]] = {}
+        # this is an array representation of a tree
+        self._heap: List[Any] = []
+
+    def is_empty(self) -> bool:
+        return len(self._heap) == 0
+
+    def clear(self):
+        self._heap = []
+        self._hash = {}
 
     def poll(self) -> Any:
-        pass
+        return self.remove_at(0)
 
     def peek(self) -> Any:
-        pass
+        return copy(self._heap[0]) if not self.is_empty() else None
 
-    def insert(self, value: Any):
-        pass
+    def add(self, value: Any):
+        # automatically adding the element to the end of the heap
+        self._heap.append(value)
+
+        # update the hashmap for easy lookups
+        if self.contains(value):
+            self._hash[value].add(len(self._heap) - 1)
+        else:
+            self._hash[value] = {len(self._heap) - 1}
+
+        # now we need to satisfy the heap invariant and swim the value
+        # up or down the list
+        self.swim(len(self._heap) - 1)
+
+    def swim(self, index: int):
+        raise NotImplemented()
+
+    def sink(self, index: int):
+        raise NotImplemented()
+
+    def swap(self, index_a: int, index_b: int):
+        raise NotImplemented()
+
+    def remove_at(self, index: int) -> Any:
+        raise NotImplemented()
 
     def remove(self, value: Any) -> Any:
-        pass
+        raise NotImplemented()
 
     def contains(self, value: Any) -> bool:
-        pass
+        # In Python 3.x the in operation on the dict_keys object is O(1)
+        # without a hash map we would need to scan the list with O(n) worst case
+        return True if value in self._hash.keys() else False
