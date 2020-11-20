@@ -52,7 +52,30 @@ Complexity Analysis (implemented as binary heap)
     Adding a hash table increases space by O(n)
 
 """
+from typing import Any, Dict, List
 
 
 class PriorityQueue:
-    pass
+    """
+    Priority Queue that allows any comparable items to be stored and retrieved by priority.
+    """
+
+    def __init__(self):
+        # hash table to store the value -> positions map
+        self._hash: Dict[Any, int] = {}
+        self._tree: List[Any] = []
+
+    def poll(self) -> Any:
+        pass
+
+    def peek(self) -> Any:
+        pass
+
+    def insert(self, value: Any):
+        pass
+
+    def remove(self, value: Any) -> Any:
+        pass
+
+    def contains(self, value: Any) -> bool:
+        pass
