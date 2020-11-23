@@ -92,16 +92,54 @@ class PriorityQueue:
 
         # now we need to satisfy the heap invariant and swim the value
         # up or down the list
-        self.swim(len(self._heap) - 1)
+        self._swim(len(self._heap) - 1)
 
-    def swim(self, index: int):
-        raise NotImplemented()
+    def _swap(self, index_a: int, index_b: int):
+        # update the map - items in heap are the keys
+        self._hash[self._heap[index_a]].remove(index_a)
+        self._hash[self._heap[index_a]].add(index_b)
+        self._hash[self._heap[index_b]].remove(index_b)
+        self._hash[self._heap[index_b]].add(index_a)
 
-    def sink(self, index: int):
-        raise NotImplemented()
+        # update the underlying heap
+        temp = copy(self._heap[index_a])
+        self._heap[index_a] = self._heap[index_b]
+        self._heap[index_b] = temp
 
-    def swap(self, index_a: int, index_b: int):
-        raise NotImplemented()
+    def _swim(self, index: int):
+        # this method is bubbling up
+        parent = (index - 1) // 2
+        # this loop keeps going while the index isn't the root node
+        # and while the element at the index is <= it's parent
+        while index > 0 and self._heap[index] <= self._heap[parent]:
+            # swap the parent and the child
+            self._swap(parent, index)
+            index = parent
+            # get the parent above the current parent index
+            parent = (index - 1) // 2
+
+    def _sink(self, index: int):
+        while True:
+            left = 2 * index + 1
+            right = 2 * index + 2
+            smallest = left  # assume left is the smallest
+
+            # sanity check for the right child
+            if right < len(self._heap) and self._heap[right] <= self._heap[left]:
+                smallest = right
+
+            # scanning from left to right in the tree as we go down levels
+            # so the left child will be the first to go out of bounds
+
+            # break the loop if the left is OOB or the child node is no longer
+            # greater than the current index
+            if left >= len(self._heap) or self._heap[index] <= self._heap[smallest]:
+                break
+
+            # move the value at the current index into the index
+            # of the smallest child
+            self._swap(smallest, index)
+            index = smallest
 
     def remove_at(self, index: int) -> Any:
         raise NotImplemented()
@@ -113,3 +151,14 @@ class PriorityQueue:
         # In Python 3.x the in operation on the dict_keys object is O(1)
         # without a hash map we would need to scan the list with O(n) worst case
         return True if value in self._hash.keys() else False
+
+
+if __name__ == "__main__":
+    pq = PriorityQueue()
+    pq.add(23)
+    pq.add(5)
+    pq.add(40)
+    pq.add(-2)
+    pq.add(0)
+
+    print(pq._heap)
