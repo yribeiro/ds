@@ -67,15 +67,19 @@ class PriorityQueue:
         # this is an array representation of a tree
         self._heap: List[Any] = []
 
+    @property
+    def heap_size(self):
+        return len(self._heap)
+
     def is_empty(self) -> bool:
-        return len(self._heap) == 0
+        return self.heap_size == 0
 
     def clear(self):
         self._heap = []
         self._hash = {}
 
     def poll(self) -> Any:
-        return self.remove_at(0)
+        return self._remove_at(0)
 
     def peek(self) -> Any:
         return copy(self._heap[0]) if not self.is_empty() else None
@@ -86,18 +90,19 @@ class PriorityQueue:
 
         # update the hashmap for easy lookups
         if self.contains(value):
-            self._hash[value].add(len(self._heap) - 1)
+            self._hash[value].add(self.heap_size - 1)
         else:
-            self._hash[value] = {len(self._heap) - 1}
+            self._hash[value] = {self.heap_size - 1}
 
         # now we need to satisfy the heap invariant and swim the value
         # up or down the list
-        self._swim(len(self._heap) - 1)
+        self._swim(self.heap_size - 1)
 
     def _swap(self, index_a: int, index_b: int):
         # update the map - items in heap are the keys
         self._hash[self._heap[index_a]].remove(index_a)
         self._hash[self._heap[index_a]].add(index_b)
+
         self._hash[self._heap[index_b]].remove(index_b)
         self._hash[self._heap[index_b]].add(index_a)
 
@@ -133,7 +138,7 @@ class PriorityQueue:
 
             # break the loop if the left is OOB or the child node is no longer
             # greater than the current index
-            if left >= len(self._heap) or self._heap[index] <= self._heap[smallest]:
+            if left >= self.heap_size or self._heap[index] <= self._heap[smallest]:
                 break
 
             # move the value at the current index into the index
@@ -141,11 +146,45 @@ class PriorityQueue:
             self._swap(smallest, index)
             index = smallest
 
-    def remove_at(self, index: int) -> Any:
-        raise NotImplemented()
+    def _remove_at(self, index: int) -> Any:
+
+        if self.heap_size == 1:
+            item = self._heap[index]
+            # remove the end item in the heap
+            self._heap.pop(-1)
+            # update the hash map - i.e. remove the index where the item was held
+            self._hash[item].pop()
+        else:
+            item = self._heap[index]
+
+            # swap the item with the end in the list
+            self._swap(index, self.heap_size - 1)
+
+            # remove the end item in the heap
+            self._heap.pop(-1)
+            # update the hash map - i.e. remove the index where the item was held
+            self._hash[item].pop()
+
+            # get the new element at index
+            elem = self._heap[index]
+
+            # try sinking
+            self._sink(index)
+
+            # try swimming if sinking doesn't move the element
+            if self._heap[index] == elem:
+                self._swim(index)
+
+        return item
 
     def remove(self, value: Any) -> Any:
-        raise NotImplemented()
+        if self.contains(value):
+            idx_set = self._hash[value]
+            # provide the first element of the set
+            item = self._remove_at(next(iter(idx_set)))
+            return item
+        else:
+            raise ValueError(f"PriorityQueue does not contain element: {value}")
 
     def contains(self, value: Any) -> bool:
         # In Python 3.x the in operation on the dict_keys object is O(1)
@@ -161,4 +200,5 @@ if __name__ == "__main__":
     pq.add(-2)
     pq.add(0)
 
-    print(pq._heap)
+    for i in range(pq.heap_size):
+        print(pq.poll())
