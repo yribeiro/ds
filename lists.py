@@ -183,6 +183,30 @@ class DoublyLinkedList:
             trav = trav.next
         return self._remove_node(trav)
 
+    def insert_at(self, idx: int, data: Any) -> bool:
+        # checks
+        assert 0 <= idx < len(self), "Index is out of bounds. Method does not support negative indexing."
+        # handle start and end
+        if idx == 0:
+            self.prepend(data)
+        elif idx == len(self) - 1:
+            self.append(data)
+        else:
+            node_before_position = self._head
+            # get the node just before the position to enter
+            for i in range(len(self)):
+                if i == idx - 1:
+                    break
+                node_before_position = node_before_position.next
+
+            # create a new node and enter into the list
+            new_node = Node(data, prev=node_before_position, next=node_before_position.next)
+            node_before_position.next = new_node
+
+            # increment the size
+            self._size += 1
+        return True
+
     # endregion
 
 
@@ -211,3 +235,8 @@ if __name__ == "__main__":
 
     dll.clear()
     print(dll)
+
+    # check insertion at random position
+    _ = [dll.append(i) for i in range(10)]
+    dll.insert_at(2, "New Entry")
+    print(dll, f"Size: {len(dll)}")
