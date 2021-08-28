@@ -1,13 +1,36 @@
+"""
+
+What is an array?
+
+    There are two types of arrays: Static and Dynamic.
+
+    A static array is a fixed length container with n elements, which are
+    indexable from range [0, n-1]. It is important to note that the array
+    has memory that is contiguous in nature i.e. with no gaps in memory addresses.
+
+    An index is simply a pointer to a memory location that abstracts the memory implementation
+    i.e. specific memory locations from the user.
+
+    Dynamic arrays grow in size and can be made up of static arrays.
+
+Complexity Analysis:
+
+    Note: Insertion, Appending and Deleting don't work for Statis arrays
+
+                    Complexity
+    ---------------------------
+    Lookup              O(1)
+    Search              O(n)
+    Insertion at idx    O(n)
+    Appending           O(1)
+    Removal             O(n)
+
+"""
+
+
 class DynamicArray:
     """
     Implementation of a DynamicArray using inbuilt python types. Implementation is to drive the point home.
-
-    Dynamic Arrays can be made out of static arrays:
-
-    Lookup at idx: O(1)
-    Insertion at idx: O(1)
-    Appending: O(n)
-    Removal: O(n)
     """
 
     def __init__(self, capacity=5):
